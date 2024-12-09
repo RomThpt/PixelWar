@@ -3,11 +3,12 @@ pub trait IPixelWar<TContractState> {
     fn changeColor(ref self: TContractState, color: (u32, u32, u32), i: u32, j: u32);
     fn end(ref self: TContractState);
     fn reset(ref self: TContractState);
-    fn getPixel(ref self: TContractState, i: u32, j: u32) -> (u32, u32, u32);
+    fn getPixel(self: @TContractState, i: u32, j: u32) -> (u32, u32, u32);
+    fn getStatus(self: @TContractState) -> bool;
 }
 
 #[starknet::contract]
-mod PixelWar {
+pub mod PixelWar {
     use starknet::ContractAddress;
     use starknet::get_caller_address;
     use starknet::storage::{
@@ -17,7 +18,6 @@ mod PixelWar {
     #[storage]
     struct Storage {
         owner: ContractAddress,
-        player: ContractAddress,
         map: Map<u32, Map<u32, (u32, u32, u32)>>,
         end: bool,
         interval: u32,
@@ -48,19 +48,22 @@ mod PixelWar {
     #[constructor]
     fn constructor(ref self: ContractState, initial_owner: ContractAddress) {
         self.owner.write(initial_owner);
+        self.end.write(true);
         let mut i: u32 = 0;
         let mut j: u32 = 0;
         let white: (u32, u32, u32) = (255, 255, 255);
         loop {
-            if (i == 100) {
+            if (i == 10) {
                 break;
             };
             loop {
-                if (j == 100) {
+                if (j == 10) {
                     break;
                 }
                 self.map.entry(i).entry(j).write(white);
+                j+=1;
             };
+            i+=1;
         };
     }
 
@@ -81,20 +84,26 @@ mod PixelWar {
             let mut j: u32 = 0;
             let white: (u32, u32, u32) = (255, 255, 255);
             loop {
-                if (i == 100) {
+                if (i == 10) {
                     break;
                 };
                 loop {
-                    if (j == 100) {
+                    if (j == 10) {
                         break;
                     }
                     self.map.entry(i).entry(j).write(white);
+                    j+=1;
                 };
+                i+=1;
             };
             Event::Reset(Reset { sender: get_caller_address() });
         }
-        fn getPixel(ref self: ContractState, i: u32, j: u32) -> (u32, u32, u32) {
+        fn getPixel(self: @ContractState, i: u32, j: u32) -> (u32, u32, u32) {
             self.map.entry(i).entry(j).read()
+        }
+
+        fn getStatus(self: @ContractState) -> bool {
+            self.end.read()
         }
     }
 }

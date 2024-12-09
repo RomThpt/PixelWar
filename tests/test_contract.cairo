@@ -6,10 +6,16 @@ use pixelwar::IPixelWarDispatcher;
 use pixelwar::IPixelWarDispatcherTrait;
 
 fn deploy_contract(name: ByteArray) -> ContractAddress {
+
+    let admin_address : ContractAddress = 'admin'.try_into().unwrap();
+    println!("admin_address: {:?}", admin_address);
     let contract = declare(name).unwrap().contract_class();
-        println!("Error2?");
-    let (contract_address, _) = contract.deploy(@array![]).unwrap();
-    println!("Error2?");
+    let mut calldata = array![];
+    admin_address.serialize(ref calldata);
+    println!("calldata: {:?}", calldata);
+    let (contract_address, _) = contract.deploy(@calldata).unwrap();
+    println!("Passed: ");
+
     contract_address
 }
 
@@ -24,4 +30,20 @@ fn test_change_color() {
     dispatcher.changeColor((0, 0, 0), 0, 0);
 
     assert!(dispatcher.getPixel(0, 0) == (0, 0, 0), "Not the expected color");
+}
+
+#[test]
+fn test_reset_map() {
+    let contract_address = deploy_contract("PixelWar");
+
+    let dispatcher = IPixelWarDispatcher { contract_address };
+    dispatcher.changeColor((0, 0, 0), 0, 0);
+    dispatcher.changeColor((0, 0, 0), 1, 1);
+    dispatcher.changeColor((0, 0, 0), 2, 2);
+
+    dispatcher.reset();
+
+    assert!(dispatcher.getPixel(0, 0) == (255, 255, 255), "Not the expected color");
+    assert!(dispatcher.getPixel(1, 1) == (255, 255, 255), "Not the expected color");
+    assert!(dispatcher.getPixel(2, 2) == (255, 255, 255), "Not the expected color");
 }
