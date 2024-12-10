@@ -41,11 +41,11 @@ fn test_reset_map() {
     let mut i: u32 = 0;
     let mut j: u32 = 0;
     loop {
-        if(i == 1000) {
+        if(i == 100) {
             break;
         }
         loop {
-            if(j == 1000) {
+            if(j == 100) {
                 break;
             }
         dispatcher.changeColor((0, 0, 0), i, j);
@@ -60,11 +60,11 @@ fn test_reset_map() {
    dispatcher.reset();
 
     loop {
-        if(i == 10) {
+        if(i == 100) {
             break;
         }
         loop {
-            if(j == 10) {
+            if(j == 100) {
                 break;
             }
             println!("{:?}", dispatcher.getPixel(i, j));

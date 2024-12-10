@@ -66,15 +66,15 @@ pub mod PixelWar {
     fn constructor(ref self: ContractState, owner: ContractAddress) {
         self.ownable.initializer(owner);
         self.end.write(true);
-        let mut i: u32 = 0;
+        let mut i: u32 = 0; 
         let mut j: u32 = 0;
         let white: (u32, u32, u32) = (255, 255, 255);
         loop {
-            if (i == 1000) {
+            if (i == 100) {
                 break;
             };
             loop {
-                if (j == 1000) {
+                if (j == 100) {
                     break;
                 }
                 self.map.entry(i).entry(j).write(white);
@@ -104,11 +104,11 @@ pub mod PixelWar {
             let mut j: u32 = 0;
             let white: (u32, u32, u32) = (255, 255, 255);
             loop {
-                if (i == 1000) {
+                if (i == 100) {
                     break;
                 };
                 loop {
-                    if (j == 1000) {
+                    if (j == 100) {
                         break;
                     }
                     self.map.entry(i).entry(j).write(white);
