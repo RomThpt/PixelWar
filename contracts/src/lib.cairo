@@ -3,8 +3,10 @@ pub trait IPixelWar<TContractState> {
     fn changeColor(ref self: TContractState, color: (u32, u32, u32), i: u32, j: u32);
     fn changeEnd(ref self: TContractState);
     fn reset(ref self: TContractState);
+
     fn getPixel(self: @TContractState, i: u32, j: u32) -> (u32, u32, u32);
     fn getStatus(self: @TContractState) -> bool;
+    fn getMap(self: @TContractState) -> Array<Array<(u32, u32, u32)>>;
 }
 
 #[starknet::contract]
@@ -123,6 +125,27 @@ pub mod PixelWar {
         }
         fn getStatus(self: @ContractState) -> bool {
             self.end.read()
+        }
+        fn getMap(self: @ContractState) -> Array<Array<(u32, u32, u32)>> {
+            let mut map: Array<Array<(u32, u32, u32)>> = ArrayTrait::new();
+            let mut i: u32 = 0;
+            loop {
+                if (i == 100) {
+                    break;
+                };
+                let mut row: Array<(u32, u32, u32)> = array![];
+                let mut j: u32 = 0;
+                loop {
+                    if (j == 100) {
+                        break;
+                    }
+                    row.append(self.map.entry(i).entry(j).read());
+                    j += 1;
+                };
+                map.append(row);
+                i += 1;
+            };
+            map
         }
     }
 }

@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@argent/x-shared": "^1.0.0",
+    "@cartridge/connector": "^0.5.1",
+    "@cartridge/controller": "^0.5.1",
+    "@cartridge/ui-next": "^0.3.45",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-slot": "^1.0.2",
@@ -23,7 +26,7 @@
     "clsx": "^2.1.0",
     "cmdk": "^0.2.1",
     "lucide-react": "^0.331.0",
-    "next": "14.0.4",
+    "next": "^14.2.20",
     "react": "^18",
     "react-blockies": "^1.4.1",
     "react-dom": "^18",

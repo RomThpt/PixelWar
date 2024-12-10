@@ -1,59 +1,51 @@
 "use client";
-import { sepolia, mainnet } from "@starknet-react/chains";
-import {
-  alchemyProvider,
-  argent,
-  braavos,
-  infuraProvider,
-  lavaProvider,
-  nethermindProvider,
-  reddioProvider,
-  StarknetConfig,
-  starkscan,
-  useInjectedConnectors,
-} from "@starknet-react/core";
-import { ArgentMobileConnector } from "starknetkit/argentMobile";
-import { WebWalletConnector } from "starknetkit/webwallet";
+import { sepolia, mainnet, Chain } from "@starknet-react/chains";
+import { StarknetConfig, voyager, Connector } from "@starknet-react/core";
+import { RpcProvider } from "starknet";
+import ControllerConnector from "@cartridge/connector/controller";
 
-interface StarknetProviderProps {
-  children: React.ReactNode;
+// Define your contract addresses
+const ETH_TOKEN_ADDRESS =
+  "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
+
+// Initialize the connector with policies
+const connector = new ControllerConnector({
+  rpc: "https://api.cartridge.gg/x/starknet/sepolia",
+  policies: [
+    {
+      target: ETH_TOKEN_ADDRESS,
+      method: "approve",
+      description: "Approval description here",
+    },
+    {
+      target: ETH_TOKEN_ADDRESS,
+      method: "transfer",
+    },
+  ],
+});
+
+// Configure RPC provider
+function provider(chain: Chain) {
+  switch (chain) {
+    case mainnet:
+      return new RpcProvider({
+        nodeUrl: "https://api.cartridge.gg/x/starknet/mainnet",
+      });
+    case sepolia:
+    default:
+      return new RpcProvider({
+        nodeUrl: "https://api.cartridge.gg/x/starknet/sepolia",
+      });
+  }
 }
 
-export function StarknetProvider({ children }: StarknetProviderProps) {
-  const { connectors: injected } = useInjectedConnectors({
-    recommended: [argent(), braavos()],
-    includeRecommended: "always",
-  });
-
-  const connectors = [
-    ...injected,
-    new WebWalletConnector({ url: "https://web.argent.xyz" }),
-    new ArgentMobileConnector(),
-  ];
-
-  const apiKey = process.env.NEXT_PUBLIC_API_KEY!;
-  const nodeProvider = process.env.NEXT_PUBLIC_PROVIDER!;
-
-  let provider;
-  if (nodeProvider == "infura") {
-    provider = infuraProvider({ apiKey });
-  } else if (nodeProvider == "alchemy") {
-    provider = alchemyProvider({ apiKey });
-  } else if (nodeProvider == "lava") {
-    provider = lavaProvider({ apiKey });
-  } else if (nodeProvider == "nethermind") {
-    provider = nethermindProvider({ apiKey });
-  } else {
-    provider = reddioProvider({ apiKey });
-  }
-
+export function StarknetProvider({ children }: { children: React.ReactNode }) {
   return (
     <StarknetConfig
-      connectors={connectors}
       chains={[mainnet, sepolia]}
       provider={provider}
-      explorer={starkscan}
-      autoConnect
+      connectors={[connector as never as Connector]}
+      explorer={voyager}
     >
       {children}
     </StarknetConfig>
