@@ -51,7 +51,7 @@ export const PixelCanvas = ({ activeColor }: { activeColor: string }) => {
     data: writeData,
     isPending: writeIsPending,
   } = useSendTransaction({
-    calls,
+    calls
   });
   const {
     data: waitData,
@@ -71,7 +71,6 @@ export const PixelCanvas = ({ activeColor }: { activeColor: string }) => {
   }, [waitStatus]);
 
 
-  // Update the ref when activeColor changes
   useEffect(() => {
     currentColorRef.current = activeColor;
   }, [activeColor]);
@@ -108,9 +107,7 @@ export const PixelCanvas = ({ activeColor }: { activeColor: string }) => {
     fabricCanvas.on("mouse:down", (options) => {
       const pointer = fabricCanvas.getViewportPoint(options.e);
       x.current = (Math.floor(pointer.x / PIXEL_SIZE) * PIXEL_SIZE);
-      console.log("x: ", x.current);
       y.current = Math.floor(pointer.y / PIXEL_SIZE) * PIXEL_SIZE;
-      console.log('y: ', y.current);
       writeAsync();
 
       // Find if there's already a pixel at this position
